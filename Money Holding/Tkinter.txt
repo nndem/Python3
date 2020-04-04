@@ -1,0 +1,30 @@
+Tkinter является событийно-ориентрированной библиотекой.
+В приложениях такого типа имеется главный цикл обработки событий.
+В Tkinter такой цикл запускается методом mainloop().
+Для завершения цикла обработки используется метод quit.
+
+Таким образом минимальное приложение на Tkinter будет таким:
+
+import tkinter
+root = tkinter.Tk()
+root.mainloop()
+
+В Tkinter - то, с чем взаимодействует пользователь (не разработчик)
+является виджетом. Виджет ысоздаются вызовом конструктора соответствующего
+класса.
+
+import tkinter
+root = tkinter.Tk()
+
+#кнопка по умолчанию:
+button1 = Button()
+button1.pack()
+
+#кнопка с указанием родительского виджета и несколькими аргументами
+button2 = Button(root, bg='red', text='Click me', command=button_clicked)
+button2.pack()
+
+root.mainloop()
+
+def button_clicked():
+	print("Click")

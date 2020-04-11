@@ -7,6 +7,8 @@ class Main(tk.Frame):
     def __init__(self, root):
         super().__init__(root)
         self.init_main()
+        self.db = db
+        self.view_records()
 
     def init_main(self):
         toolbar = tk.Frame(bg="#d7dBe0", bd=2) #widget toolbar
@@ -34,6 +36,18 @@ class Main(tk.Frame):
 
         self.tree.pack()
 
+    def records(self, description, costs, amount):
+        self.db.insert_data(description, costs, amount)
+        self.view_records()
+
+    def view_records(self):
+        self.db.c.execute('''
+                            SELECT * FROM finance
+                          ''')
+        [self.tree.delete(i) for i in self.tree.get_children()]
+        [self.tree.insert('', 'end', values=row) for row in self.db.c.fetchall()]
+
+
     @staticmethod
     def open_dialog():
         Child()
@@ -43,6 +57,7 @@ class Child(tk.Toplevel):
     def __init__(self):
         super().__init__(root)
         self.init_child()
+        self.view = app
 
     def init_child(self):
         self.title("Добавить доходы/расходы")
@@ -79,30 +94,39 @@ class Child(tk.Toplevel):
         # widget - кнопка
         btn_ok = ttk.Button(self, text="Добавить")
         btn_ok.place(x=220, y=170)
-        btn_ok.bind('<Button-1>')
+        btn_ok.bind('<Button-1>', lambda event: self.view.records(description=self.entry_description.get(),
+                                                                  costs=self.entry_money.get(),
+                                                                  amount=self.combobox.get()))
 
         self.grab_set()
         self.focus_set()
 
-    class DB:
-        def __init__(self):
-            self.conn = sqlite3.connect('finance.db')
-            self.c = self.conn.cursor()
-            self.c.execute(
-                    '''
-                        CREATE TABLE IF NOT EXISTS finance(
-                          id iINTEGER PRIMARY KEY,
-                          description TEXT,
-                          cost TEXT,
-                          amount REAL) 
-                    '''
-            )
-            self.conn.commit()
 
+class DB:
+    def __init__(self):
+        self.conn = sqlite3.connect('finance.db')
+        self.c = self.conn.cursor()
+        self.c.execute(
+                '''
+                    CREATE TABLE IF NOT EXISTS finance(
+                      id INTEGER PRIMARY KEY AUTOINCREMENT, 
+                      description TEXT,
+                      cost TEXT,
+                      amount REAL) 
+                '''
+        )
+        self.conn.commit()
 
+    def insert_data(self, description, cost, amount):
+        self.c.execute('''
+                        INSERT INTO finance(description, cost, amount)
+                        VALUES (?, ?, ?)
+                        ''', (description, cost, amount))
+        self.conn.commit()
 
 if __name__ == "__main__":
     root = tk.Tk()
+    db = DB()
     app = Main(root)
     app.pack()
     root.title('Household finance')

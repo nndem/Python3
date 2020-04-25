@@ -19,6 +19,11 @@ class Main(tk.Frame):
                                     compound=tk.TOP) #widget button
         btn_open_dialog.pack(side=tk.LEFT)
 
+        btn_edit_dialog = tk.Button(toolbar, text='Редактировать', bg="#d7dBe0", bd=0,
+                                    command=self.open_update_dialog,
+                                    compound=tk.TOP)
+        btn_edit_dialog.pack(side=tk.LEFT)
+
         #widget
         self.tree = ttk.Treeview(self, column=('ID', 'description', 'cost', 'amount'),
                                  height=15, show='headings')
@@ -40,6 +45,14 @@ class Main(tk.Frame):
         self.db.insert_data(description, costs, amount)
         self.view_records()
 
+    def update_record(self, description, cost, amount):
+        self.db.c.execute('''UPDATE finance
+                             SET description=?, cost=?, amount=?
+                             WHERE ID=?''', (description, cost, amount,
+                                             self.tree.set(self.tree.selection()[0], "#1")))
+        self.db.conn.commit()
+        self.view_records()
+
     def view_records(self):
         self.db.c.execute('''
                             SELECT * FROM finance
@@ -51,6 +64,10 @@ class Main(tk.Frame):
     @staticmethod
     def open_dialog():
         Child()
+
+    @staticmethod
+    def open_update_dialog():
+        Update()
 
 
 class Child(tk.Toplevel):
@@ -88,13 +105,13 @@ class Child(tk.Toplevel):
         self.entry_money.place(x=200, y=110)
 
         # widget - кнопка
-        button_cancel = ttk.Button(self, text='Закрыть', command=self.destroy)
-        button_cancel.place(x=300, y=170)
+        self.button_cancel = ttk.Button(self, text='Закрыть', command=self.destroy)
+        self.button_cancel.place(x=300, y=170)
 
         # widget - кнопка
-        btn_ok = ttk.Button(self, text="Добавить")
-        btn_ok.place(x=220, y=170)
-        btn_ok.bind('<Button-1>', lambda event: self.view.records(description=self.entry_description.get(),
+        self.btn_ok = ttk.Button(self, text="Добавить")
+        self.btn_ok.place(x=220, y=170)
+        self.btn_ok.bind('<Button-1>', lambda event: self.view.records(description=self.entry_description.get(),
                                                                   costs=self.entry_money.get(),
                                                                   amount=self.combobox.get()))
 
@@ -102,6 +119,20 @@ class Child(tk.Toplevel):
         self.focus_set()
 
 
+class Update(Child):
+    def __init__(self):
+        super().__init__()
+        self.init_edit()
+        self.view = app
+
+    def init_edit(self):
+        self.title('Редактировать позицию')
+        btn_edit = ttk.Button(self, text='Редактировать')
+        btn_edit.place(x=205, y=170)
+        btn_edit.bind('<Button-1>', lambda event: self.view.update_record(self.entry_description.get(),
+                                                                          self.combobox.get(),
+                                                                          self.entry_money.get()))
+        self.btn_ok.destroy()
 class DB:
     def __init__(self):
         self.conn = sqlite3.connect('finance.db')

@@ -13,18 +13,25 @@ class Main(tk.Frame):
     def init_main(self):
         toolbar = tk.Frame(bg="#d7dBe0", bd=2) #widget toolbar
         toolbar.pack(side=tk.TOP, fill=tk.X)
-
+        # btn
         btn_open_dialog = tk.Button(toolbar, text='Добавить позицию',
                                     command=self.open_dialog, bg="#d7dBe0", bd=0,
                                     compound=tk.TOP) #widget button
         btn_open_dialog.pack(side=tk.LEFT)
 
+        # btn
         btn_edit_dialog = tk.Button(toolbar, text='Редактировать', bg="#d7dBe0", bd=0,
                                     command=self.open_update_dialog,
                                     compound=tk.TOP)
         btn_edit_dialog.pack(side=tk.LEFT)
 
-        #widget
+        # btn
+        btn_delete = tk.Button(toolbar, text='Удалить позицию', bg="#d7dBe0", bd=0,
+                                    command=self.delete_records,
+                                    compound=tk.TOP)
+        btn_delete.pack(side=tk.LEFT)
+
+        # widget
         self.tree = ttk.Treeview(self, column=('ID', 'description', 'cost', 'amount'),
                                  height=15, show='headings')
         # доп.параметры для созданных колонок
@@ -60,6 +67,14 @@ class Main(tk.Frame):
         [self.tree.delete(i) for i in self.tree.get_children()]
         [self.tree.insert('', 'end', values=row) for row in self.db.c.fetchall()]
 
+    def delete_records(self):
+        for selection_item in self.tree.selection():
+            self.db.c.execute('''
+                                DELETE FROM finance
+                                WHERE ID=?
+                              ''', (self.tree.set(selection_item, '#1')))
+        self.db.conn.commit()
+        self.view_records()
 
     @staticmethod
     def open_dialog():
@@ -133,6 +148,8 @@ class Update(Child):
                                                                           self.combobox.get(),
                                                                           self.entry_money.get()))
         self.btn_ok.destroy()
+
+
 class DB:
     def __init__(self):
         self.conn = sqlite3.connect('finance.db')

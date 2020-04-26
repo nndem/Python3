@@ -42,7 +42,7 @@ class Main(tk.Frame):
 
         # Придадим название колонкам
         self.tree.heading("ID", text='ID')
-        self.tree.heading('description', text="наименование")
+        self.tree.heading('description', text="Наименование")
         self.tree.heading('cost', text="Статья доходов\расходов")
         self.tree.heading('amount', text="Сумма")
 
@@ -127,8 +127,8 @@ class Child(tk.Toplevel):
         self.btn_ok = ttk.Button(self, text="Добавить")
         self.btn_ok.place(x=220, y=170)
         self.btn_ok.bind('<Button-1>', lambda event: self.view.records(description=self.entry_description.get(),
-                                                                  costs=self.entry_money.get(),
-                                                                  amount=self.combobox.get()))
+                                                                  amount=self.entry_money.get(),
+                                                                  costs=self.combobox.get()))
 
         self.grab_set()
         self.focus_set()

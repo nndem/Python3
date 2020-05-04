@@ -12,18 +12,33 @@ pygame.display.set_icon(img)
 font = pygame.font.SysFont('malgungothic', 32)
 
 # создание текста
-RED = (255, 0, 0)
+RED   = (255, 0, 0)
 GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
+BLUE  = (0, 0, 255)
+BLACK = (0, 0, 0)
 follow = font.render('alive!', 1, RED, GREEN)
-
-
+width, height = follow.get_size()
+x, y = 0, 300
+direct_x = 1
+direct_y = 1
+FPS = 60
 ### игровой цикл (цикл обработки событий)
 
+clock = pygame.time.Clock()
 # перехватываем все события, связанные с нашим окном
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             quit()
-    screen.blit(follow, (0, 0))
+    clock.tick(FPS)
+    screen.fill(BLACK)
+    screen.blit(follow, (x, y))
+
+    x += direct_x
+    if x + width >= 600 or x < 0:
+        direct_x = -direct_x
+
+    y += direct_y
+    if y + height >= 400 or y < 0:
+        direct_y = -direct_y
     pygame.display.update()

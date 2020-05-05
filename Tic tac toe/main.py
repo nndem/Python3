@@ -9,11 +9,11 @@ def check_win(mas, sign):
         if row.count(sign) == 3:
             return sign
     for col in range(3):
-        if mas[0][col] == sign and mas[1][col] and mas[2][col]:
+        if mas[0][col] == sign and mas[1][col] == sign and mas[2][col] == sign:
             return sign
-    if mas[0][0] == sign and mas[1][1] and mas[2][2]:
+    if mas[0][0] == sign and mas[1][1] == sign and mas[2][2] == sign:
         return sign
-    if mas[0][2] == sign and mas[1][1] and mas[2][0]:
+    if mas[0][2] == sign and mas[1][1] == sign and mas[2][0] == sign:
         return sign
     if zeroes == 0:
         return 'Draw'
@@ -56,7 +56,7 @@ while True:
             mas = [[0] * 3 for i in range(3)]
             query = 0
             screen.fill(black)
-            
+
     if not game_over:
         for row in range(3):
             for col in range(3):
@@ -75,17 +75,17 @@ while True:
                 elif color == green:
                     pygame.draw.circle(screen, white, (x + size_block // 2, y + size_block // 2), size_block // 2 - 3,
                                        3)
-        if (query - 1) % 2 == 0:  # x
-            game_over = check_win(mas, 'x')
-        else:
-            game_over = check_win(mas, 'o')
+    if (query - 1) % 2 == 0:  # x
+        game_over = check_win(mas, 'x')
+    else:
+        game_over = check_win(mas, 'o')
 
-        if game_over:
-            screen.fill(black)
-            font = pygame.font.SysFont('malgungothic', 80)
-            text = font.render(game_over, True, white)
-            text_rect = text.get_rect()
-            text_x = screen.get_width() / 2 - text_rect.width / 2
-            text_y = screen.get_height() / 2 - text_rect.height / 2
-            screen.blit(text, (text_x, text_y))
-        pygame.display.update()
+    if game_over:
+        screen.fill(black)
+        font = pygame.font.SysFont('malgungothic', 80)
+        text = font.render(game_over, True, white)
+        text_rect = text.get_rect()
+        text_x = screen.get_width() / 2 - text_rect.width / 2
+        text_y = screen.get_height() / 2 - text_rect.height / 2
+        screen.blit(text, (text_x, text_y))
+    pygame.display.update()

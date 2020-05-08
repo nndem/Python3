@@ -22,16 +22,47 @@ class VkSearcher():
         self.vk = self.vk_session.get_api()
         return self.vk
 
-    def enter_parameters(self, age_range: [], city_number: int, psex: int):
+    def enter_parameters(self, age_range: [], city_number: int, sex: int):
         self.params = {'age_min': age_range[0], 'age_max': age_range[1],
-                  'location': city_number, 'pol': psex}
+                       'location': city_number, 'pol': sex}
         return self.params
+
+    def search(self):
+        print(f"""Properties of search:
+                location: {self.params['location']}\n
+                age_range: {self.params['age_min']}-{self.params['age_max']}\n
+                      sex: {self.params['pol']}\n
+                """)
+        min_vozr = self.params['age_min']
+        max_vozr = self.params['age_max']
+        city_number = self.params['location']
+        sex = self.params['pol']
+        while min_vozr <= max_vozr:
+            month_number = 1
+            result = self.vk.users.search(
+                count=1000,
+                fields='id, photo_max_orig, has_photo, last_seen, relation', city=city_number, sex=sex
+            )
+            month_number += 1
+            print(result)
+            # filtering
+
+
+
+
+
+
+
+
+
+
 
 
 def main():
     obj = VkSearcher()
     obj.autorization('login.txt', 'pass.txt')
-    obj.enter_parameters([20, 21], city_number=123, psex=1)
+    obj.enter_parameters([20, 21], city_number=123, sex=1)
+    obj.search()
 
 
 if __name__ == '__main__':
